@@ -45,17 +45,14 @@ class VirtualGamepadApp:
     def press_button(self, name):
         self.buttons_state[name] = True
         self.update_button_visual(name)
-        print(f"Pressed {name} -> {self.buttons_state[name]}")
 
     def release_button(self, name):
         self.buttons_state[name] = False
         self.update_button_visual(name)
-        print(f"Released {name} -> {self.buttons_state[name]}")
 
     def toggle_button_rclck(self, name):
         self.buttons_state[name] = not self.buttons_state[name]
         self.update_button_visual(name)
-        print(f"Toggled {name} -> {self.buttons_state[name]}")
 
     def update_button_visual(self, name):
         state = self.buttons_state[name]
@@ -76,7 +73,7 @@ class VirtualGamepadApp:
         frame_left_top.pack(side=tk.LEFT, padx=10)
 
         ttk.Label(frame_left_top, text="LT").pack()
-        self.slider_lt = ttk.Scale(frame_left_top, from_=-1.0, to=1.0, orient=tk.HORIZONTAL,
+        self.slider_lt = ttk.Scale(frame_left_top, from_=0.0, to=1.0, orient=tk.HORIZONTAL,
                                    command=self.on_left_trigger, length=100)
         self.slider_lt.pack()
 
@@ -85,7 +82,7 @@ class VirtualGamepadApp:
         frame_right_top.pack(side=tk.RIGHT, padx=10)
 
         ttk.Label(frame_right_top, text="RT").pack()
-        self.slider_rt = ttk.Scale(frame_right_top, from_=-1.0, to=1.0, orient=tk.HORIZONTAL,
+        self.slider_rt = ttk.Scale(frame_right_top, from_=0.0, to=1.0, orient=tk.HORIZONTAL,
                                    command=self.on_right_trigger, length=100)
         self.slider_rt.pack()
 
@@ -491,7 +488,6 @@ class VirtualGamepadApp:
             self.gamepad.release_button(vgamepad.XUSB_BUTTON.XUSB_GAMEPAD_GUIDE)
 
 
-
         # Аналоговые стики
         self.gamepad.left_joystick_float(x_value_float=self.left_stick_x, y_value_float=self.left_stick_y)
         self.gamepad.right_joystick_float(x_value_float=self.right_stick_x, y_value_float=self.right_stick_y)
@@ -507,5 +503,6 @@ class VirtualGamepadApp:
 
 if __name__ == "__main__":
     root = tk.Tk()
+    root.attributes("-topmost", True)
     app = VirtualGamepadApp(root)
     root.mainloop()
