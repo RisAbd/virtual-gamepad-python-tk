@@ -23,6 +23,9 @@ class VirtualGamepadApp:
             "RB": False,
             "L3": False,
             "R3": False,
+            "START": False,
+            "BACK": False,
+            "GUIDE": False,
         }
 
         # Ссылки на виджеты
@@ -95,11 +98,45 @@ class VirtualGamepadApp:
         left_frame = tk.Frame(container)
         left_frame.grid(row=0, column=0, sticky="n")
 
+        # Правая часть: бампер и ABXY
+        right_frame = tk.Frame(container)
+        right_frame.grid(row=0, column=2, sticky="n", padx=10)
+
+        # Центр: кнопки START, BACK, GUIDE
+        center_frame = tk.Frame(container)
+        center_frame.grid(row=0, column=1, sticky="n", padx=10, pady=30)
+
+        # Рамка для Start и Back в ряд
+        top_buttons_frame = tk.Frame(center_frame)
+        top_buttons_frame.pack(pady=1)  # небольшой отступ сверху
+
+        for name in ["BACK", "START"]:
+            lbl = tk.Label(top_buttons_frame, text=name, width=5, height=1, relief='raised', bg='lightgray')
+            lbl.pack(side=tk.LEFT, padx=3)
+            lbl.bind("<Button-1>", lambda e, n=name: self.press_button(n))
+            lbl.bind("<ButtonRelease-1>", lambda e, n=name: self.release_button(n))
+            lbl.bind("<Button-3>", lambda e, n=name: self.toggle_button_rclck(n))
+            self.buttons[name] = lbl
+
+        # Создаем еще один фрейм для GUIDE, чтобы его отобразить снизу и с теми же размерами и отступами
+        guide_frame = tk.Frame(center_frame)
+        guide_frame.pack(pady=(10, 3))  # сверху 10 пикселей, снизу 3 пикселя
+
+
+        lbl_guide = tk.Label(guide_frame, text="GUIDE", width=5, height=2, relief='raised', bg='lightgray')
+        lbl_guide.pack(padx=3, pady=3)
+        lbl_guide.bind("<Button-1>", lambda e, n="GUIDE": self.press_button(n))
+        lbl_guide.bind("<ButtonRelease-1>", lambda e, n="GUIDE": self.release_button(n))
+        lbl_guide.bind("<Button-3>", lambda e, n="GUIDE": self.toggle_button_rclck(n))
+        self.buttons["GUIDE"] = lbl_guide
+
+
+
         # Левый бампер над дпадом
         lb_frame = tk.Frame(left_frame)
         lb_frame.pack()
         lb_label = tk.Label(lb_frame, text="LB", width=6, height=2, relief='raised', bg='lightgray')
-        lb_label.pack(pady=(0, 5))
+        lb_label.pack(pady=(0, 3))
         lb_label.bind("<Button-1>", lambda e, n="LB": self.press_button(n))
         lb_label.bind("<ButtonRelease-1>", lambda e, n="LB": self.release_button(n))
         lb_label.bind("<Button-3>", lambda e, n="LB": self.toggle_button_rclck(n))
@@ -118,22 +155,18 @@ class VirtualGamepadApp:
 
         for name, r, c in dpad_layout:
             lbl = tk.Label(dpad_frame, text=name[5:], width=4, height=2, relief='raised', bg='lightgray')
-            lbl.grid(row=r, column=c, padx=3, pady=3)
+            lbl.grid(row=r, column=c, padx=3, pady=1)
             lbl.bind("<Button-1>", lambda e, n=name: self.press_button(n))
             lbl.bind("<ButtonRelease-1>", lambda e, n=name: self.release_button(n))
             lbl.bind("<Button-3>", lambda e, n=name: self.toggle_button_rclck(n))
             self.buttons[name] = lbl
 
 
-        # Правая часть: бампер и ABXY
-        right_frame = tk.Frame(container)
-        right_frame.grid(row=0, column=1, sticky="n", padx=30)
-
         # Правый бампер над ABXY
         rb_frame = tk.Frame(right_frame)
         rb_frame.pack()
         rb_label = tk.Label(rb_frame, text="RB", width=6, height=2, relief='raised', bg='lightgray')
-        rb_label.pack(pady=(0, 5))
+        rb_label.pack(pady=(0, 3))
         rb_label.bind("<Button-1>", lambda e, n="RB": self.press_button(n))
         rb_label.bind("<ButtonRelease-1>", lambda e, n="RB": self.release_button(n))
         rb_label.bind("<Button-3>", lambda e, n="RB": self.toggle_button_rclck(n))
@@ -152,7 +185,7 @@ class VirtualGamepadApp:
 
         for name, r, c in abxy_layout:
             lbl = tk.Label(abxy_frame, text=name, width=4, height=2, relief='raised', bg='lightgray')
-            lbl.grid(row=r, column=c, padx=3, pady=3)
+            lbl.grid(row=r, column=c, padx=3, pady=1)
             lbl.bind("<Button-1>", lambda e, n=name: self.press_button(n))
             lbl.bind("<ButtonRelease-1>", lambda e, n=name: self.release_button(n))
             lbl.bind("<Button-3>", lambda e, n=name: self.toggle_button_rclck(n))
@@ -442,6 +475,20 @@ class VirtualGamepadApp:
         else:
             self.gamepad.release_button(vgamepad.XUSB_BUTTON.XUSB_GAMEPAD_RIGHT_THUMB)
 
+        if self.buttons_state["START"]:
+            self.gamepad.press_button(vgamepad.XUSB_BUTTON.XUSB_GAMEPAD_START)
+        else:
+            self.gamepad.release_button(vgamepad.XUSB_BUTTON.XUSB_GAMEPAD_START)
+
+        if self.buttons_state["BACK"]:
+            self.gamepad.press_button(vgamepad.XUSB_BUTTON.XUSB_GAMEPAD_BACK)
+        else:
+            self.gamepad.release_button(vgamepad.XUSB_BUTTON.XUSB_GAMEPAD_BACK)
+
+        if self.buttons_state["GUIDE"]:
+            self.gamepad.press_button(vgamepad.XUSB_BUTTON.XUSB_GAMEPAD_GUIDE)
+        else:
+            self.gamepad.release_button(vgamepad.XUSB_BUTTON.XUSB_GAMEPAD_GUIDE)
 
 
 
